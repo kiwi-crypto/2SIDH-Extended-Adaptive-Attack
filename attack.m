@@ -4,12 +4,7 @@
 recover_bit := function(n, jo, ordering, K1, K2, A, pQ)
 	H := Oracle(P - K1*(2^(eA-n))*Q, (1+2^(eA-n))*Q, 2^eA);
 	for cQ in pQ do
-		if (K2-K1) mod 2 eq 0 then
-			js := [ jInvariant(LongIsogeny(A + (K2-K1)*cQ, 2^(n-1))) ];
-		else
-			js := TwoNeighbours(jInvariant(LongIsogeny(A + (K2-K1)*cQ, 2^n)));
-		end if;
-		for j in js do
+		for j in TwoNeighbours(jInvariant(LongIsogeny(A + (K2-K1)*cQ, 2^n))) do
 			if H eq positional_hash(jo, j : order:=ordering) then
 				// If we find a hash match, we know the bit is 0
 				return 0;
@@ -126,17 +121,13 @@ make_candies := function(n, a1, a2, CandidateList1, CandidateList2)
 			"Something went wrong";
 		end if;
 
-		pK1 := pListToDec(a1, 2);
-		pK2 := pListToDec(a2, 2);
 	else
-		// Phase 1 for branch 1.
 		Append(~a2, recover_bit(n, jE2_0, 2, K2, K1, A1, divQ1));
-		pK2 := pListToDec(a2, 2);
-
-		// Phase 1 for branch 2.
 		Append(~a1, recover_bit(n, jE1_0, 1, K1, K2, A2, divQ2));
-		pK1 := pListToDec(a1, 2);
 	end if;
+
+	pK1 := pListToDec(a1, 2);
+	pK2 := pListToDec(a2, 2);
 
 	// Setup phase 2 for branch 1.
 	phi1 := deg2_isogeny_from_dual_ker(2^(n-2)*lstQ1[1]);
